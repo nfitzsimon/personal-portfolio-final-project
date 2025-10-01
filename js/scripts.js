@@ -59,7 +59,7 @@ function fillProjects(data) {
     const project = document.createElement('div');
     project.id = element.project_id;
     project.classList.add('projectCard');
-    const backgroundImageUrl = `url(${element.card_image})`
+    const backgroundImageUrl = `url(${element.card_image ?? '../images/card_placeholder_bg.webp'})`;
     project.style.backgroundImage = backgroundImageUrl;
     project.style.backgroundSize = "cover";
 
