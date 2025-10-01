@@ -82,7 +82,7 @@ function fillProjects(data) {
     const card = document.createElement('div');
     project.id = project.project_id;
     card.classList.add('projectCard');
-    card.addEventListener('click', () => updateSpotlight(project));
+    card.addEventListener('pointerdown', () => updateSpotlight(project));
     const backgroundImageUrl = `url(${project.card_image ?? '../images/card_placeholder_bg.webp'})`;
     card.style.backgroundImage = backgroundImageUrl;
     card.style.backgroundSize = "cover";
@@ -101,6 +101,24 @@ function fillProjects(data) {
 
     if (index === 0) updateSpotlight(project);
   });
+
+  // Arrow functionality
+  const leftArrow = document.querySelector('.arrow-left');
+  const rightArrow = document.querySelector('.arrow-right');
+
+  const isMobile = window.matchMedia('(max-width: 768px)');
+
+  const scrollProjects = (direction) => {
+    const scrollAmount = 200;
+    if (isMobile.matches) {
+      projectList.scrollLeft += direction === 'left' ? -scrollAmount : scrollAmount;
+    } else {
+      projectList.scrollTop += direction === 'left' ? -scrollAmount : scrollAmount;
+    }
+  };
+
+  leftArrow.addEventListener('pointerdown', () => scrollProjects('left'));
+  rightArrow.addEventListener('pointerdown', () => scrollProjects('right'));
 }
 
 rebuildAboutMe();
