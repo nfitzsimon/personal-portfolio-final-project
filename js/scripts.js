@@ -40,7 +40,7 @@ const rebuildProjects = async () => {
     .then(response => {
       // Check if the response was successful (status code 200-299)
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        throw new Error('Error fetching data: ${apiResponse.status}, ${apiResponse.statusText')
       }
       return response.json();
     })
@@ -55,23 +55,51 @@ const rebuildProjects = async () => {
 
 function fillProjects(data) {
   const projectList = document.querySelector('#projectList');
-  data.forEach((element, index, array) => {
-    const project = document.createElement('div');
-    project.id = element.project_id;
-    project.classList.add('projectCard');
-    const backgroundImageUrl = `url(${element.card_image ?? '../images/card_placeholder_bg.webp'})`;
-    project.style.backgroundImage = backgroundImageUrl;
-    project.style.backgroundSize = "cover";
+  const projectSpotlight = document.getElementById('projectSpotlight');
+  let spotlightTitles = document.getElementById('spotlightTitles');
+
+  // Need to remove original spotlightTitles that is a div to late put in h3
+  spotlightTitles.remove();
+  spotlightTitles = document.createElement('h3');
+  spotlightTitles.id = 'spotlightTitles';
+  const spotlightDescription = document.createElement('p');
+  const spotlightLink = document.createElement('a');
+  spotlightLink.textContent = 'Click here to see more...';
+
+  projectSpotlight.append(spotlightTitles, spotlightDescription, spotlightLink);
+
+  const updateSpotlight = (project) => {
+    projectSpotlight.style.backgroundImage = `url(${project.spotlight_image || '../images/spotlight_placeholder_bg.webp'})`;
+    spotlightTitles.textContent = project.project_name ?? 'Unnamed Project';
+    spotlightUrl = `${project.url || '#'}`;
+    spotlightDescription.textContent = project.long_description || 'No description.';
+    spotlightLink.href = spotlightUrl;
+  }
+
+  data.forEach((project, index) => {
+    const documentFragment = document.createDocumentFragment();
+
+    const card = document.createElement('div');
+    project.id = project.project_id;
+    card.classList.add('projectCard');
+    card.addEventListener('click', () => updateSpotlight(project));
+    const backgroundImageUrl = `url(${project.card_image ?? '../images/card_placeholder_bg.webp'})`;
+    card.style.backgroundImage = backgroundImageUrl;
+    card.style.backgroundSize = "cover";
 
     const projectHeader = document.createElement('h4');
-    projectHeader.textContent = element.project_name;
-    project.append(projectHeader);
+    projectHeader.textContent = project.project_name;
+    card.append(projectHeader);
 
     const projectText = document.createElement('p');
-    projectText.textContent = element.short_description;
-    project.append(projectText);
+    projectText.textContent = project.short_description;
+    card.append(projectText);
 
-    projectList.append(project);
+    documentFragment.append(card);
+
+    projectList.append(documentFragment);
+
+    if (index === 0) updateSpotlight(project);
   });
 }
 
