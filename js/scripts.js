@@ -3,7 +3,7 @@ const rebuildAboutMe = async () => {
     .then(response => {
       // Check if the response was successful (status code 200-299)
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        throw new Error('Error fetching data: ${apiResponse.status}, ${apiResponse.statusText')
       }
       return response.json();
     })
@@ -45,7 +45,9 @@ const rebuildProjects = async () => {
       return response.json();
     })
     .then(data => {
+      rebuildSpotlight();
       fillProjects(data);
+      buildArrowNavigation();
     })
     .catch(error => {
       // Handle any errors that occurred during the fetch operation
@@ -55,26 +57,6 @@ const rebuildProjects = async () => {
 
 function fillProjects(data) {
   const projectList = document.querySelector('#projectList');
-  const projectSpotlight = document.getElementById('projectSpotlight');
-  let spotlightTitles = document.getElementById('spotlightTitles');
-
-  // Need to remove original spotlightTitles that is a div to late put in h3
-  spotlightTitles.remove();
-  spotlightTitles = document.createElement('h3');
-  spotlightTitles.id = 'spotlightTitles';
-  const spotlightDescription = document.createElement('p');
-  const spotlightLink = document.createElement('a');
-  spotlightLink.textContent = 'Click here to see more...';
-
-  projectSpotlight.append(spotlightTitles, spotlightDescription, spotlightLink);
-
-  const updateSpotlight = (project) => {
-    projectSpotlight.style.backgroundImage = `url(${project.spotlight_image || '../images/spotlight_placeholder_bg.webp'})`;
-    spotlightTitles.textContent = project.project_name ?? 'Unnamed Project';
-    spotlightUrl = `${project.url || '#'}`;
-    spotlightDescription.textContent = project.long_description || 'No description.';
-    spotlightLink.href = spotlightUrl;
-  }
 
   data.forEach((project, index) => {
     const documentFragment = document.createDocumentFragment();
@@ -101,8 +83,37 @@ function fillProjects(data) {
 
     if (index === 0) updateSpotlight(project);
   });
+}
 
-  // Arrow functionality
+function rebuildSpotlight() {
+  const projectSpotlight = document.querySelector('#projectSpotlight');
+  let spotlightTitles = projectSpotlight.querySelector('#spotlightTitles');
+
+  // Need to remove original spotlightTitles that is a div to late put in h3
+  spotlightTitles.remove();
+  spotlightTitles = document.createElement('h3');
+  spotlightTitles.id = 'spotlightTitles';
+  const spotlightDescription = document.createElement('p');
+  const spotlightLink = document.createElement('a');
+  spotlightLink.textContent = 'Click here to see more...';
+
+  projectSpotlight.append(spotlightTitles, spotlightDescription, spotlightLink);
+}
+
+function updateSpotlight(project) {
+  const projectSpotlight = document.querySelector('#projectSpotlight');
+  const spotlightTitles = projectSpotlight.querySelector('#spotlightTitles');
+  const spotlightDescription = projectSpotlight.querySelector('p');
+  const spotlightLink = projectSpotlight.querySelector('a');
+
+  projectSpotlight.style.backgroundImage = `url(${project.spotlight_image || '../images/spotlight_placeholder_bg.webp'})`;
+  spotlightTitles.textContent = project.project_name ?? 'Unnamed Project';
+  spotlightUrl = `${project.url || '#'}`;
+  spotlightDescription.textContent = project.long_description || 'No description.';
+  spotlightLink.href = spotlightUrl;
+}
+
+function buildArrowNavigation() {
   const leftArrow = document.querySelector('.arrow-left');
   const rightArrow = document.querySelector('.arrow-right');
 
