@@ -121,5 +121,59 @@ function fillProjects(data) {
   rightArrow.addEventListener('pointerdown', () => scrollProjects('right'));
 }
 
+const rebuildForm = async () => {
+  const form = document.getElementById('formSection');
+  const emailInput = document.getElementById('contactEmail');
+  const messageInput = document.getElementById('contactMessage');
+  const emailError = document.getElementById('emailError');
+  const messageError = document.getElementById('messageError');
+  const charactersLeft = document.getElementById('charactersLeft');
+
+  const illegalChars = /[^a-zA-Z0-9@._-]/;
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  messageInput.addEventListener('input', () => {
+    const length = messageInput.value.length;
+    charactersLeft.textContent = `Characters: ${length}/300`;
+  });
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    let valid = true;
+    emailError.textContent = '';
+    messageError.textContent = '';
+
+    const email = emailInput.value.trim();
+    const message = messageInput.value.trim();
+
+    if (!email) {
+      emailError.textContent = 'Email is required.';
+      valid = false;
+    } else if (!emailRegex.test(email)) {
+      emailError.textContent = 'Invalid email format.';
+      valid = false;
+    } else if (illegalChars.test(email)) {
+      emailError.textContent = 'Email contains invalid characters.';
+      valid = false;
+    }
+
+    if (!message) {
+      messageError.textContent = 'Message is required.';
+      valid = false;
+    } else if (message.length > 300) {
+      messageError.textContent = 'Message must be less than 300 characters.';
+      valid = false;
+    } else if (illegalChars.test(message)) {
+      messageError.textContent = 'Message contains invalid characters.';
+      valid = false;
+    }
+
+    if (valid) {
+      alert('Form submitted successfully!');
+    }
+  })
+}
+
 rebuildAboutMe();
 rebuildProjects();
+rebuildForm();
