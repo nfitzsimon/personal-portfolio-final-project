@@ -68,6 +68,7 @@ function fillProjects(data) {
     const backgroundImageUrl = `url(${project.card_image ?? '../images/card_placeholder_bg.webp'})`;
     card.style.backgroundImage = backgroundImageUrl;
     card.style.backgroundSize = "cover";
+    card.style.backgroundPosition = 'center';
 
     const projectHeader = document.createElement('h4');
     projectHeader.textContent = project.project_name;
@@ -107,6 +108,8 @@ function updateSpotlight(project) {
   const spotlightLink = projectSpotlight.querySelector('a');
 
   projectSpotlight.style.backgroundImage = `url(${project.spotlight_image || '../images/spotlight_placeholder_bg.webp'})`;
+  projectSpotlight.style.backgroundSize = "cover";
+  projectSpotlight.style.backgroundPosition = 'center';
   spotlightTitles.textContent = project.project_name ?? 'Unnamed Project';
   spotlightUrl = `${project.url || '#'}`;
   spotlightDescription.textContent = project.long_description || 'No description.';
